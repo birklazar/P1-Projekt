@@ -1,7 +1,0 @@
-salt, 25.40g
-pepper, 543.20g
-100, 100.00g
-Salt, 30.00g
-, 0.00g
-Curry, 15.00g
-kanel, 20.00g
