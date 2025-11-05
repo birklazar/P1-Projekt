@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+
 void addingredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
+
 int main() {
     FILE *ingredientsFile;
 
@@ -9,6 +11,9 @@ int main() {
     char ingredientNames [1000] [1000];
     double ingredientAmounts [1000];
     int inputChoice = 2; 
+
+    printf("Choose 1: for add ingredient: \nChoose 2: for scan ingredient: \n");
+
     scanf("%d",&inputChoice);
     switch (inputChoice)
     {
@@ -16,7 +21,7 @@ int main() {
           addingredient();
         break;
     case 2 : 
-     count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
+        count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
 
         printf("count %d", count);
       for (int i = 0; i < count; i++)
@@ -50,21 +55,16 @@ char ingredients[1000];
     }
     fclose(ingredientsFile);
 
-
-
-
-
-
  return count;
 }
 
 void addingredient() {
 
-    int maengde; 
+    double maengde; 
     char input [1000]; 
     FILE* ingredientsFile;
-  printf("Write an ingredient and an amount in grams: \n");
-    scanf("%s%lf",&input,&maengde);
+    printf("Write an ingredient and an amount in grams: \n");
+    scanf("%s %lf",&input,&maengde);
     ingredientsFile = fopen("ingredients.txt", "a");
     fprintf(ingredientsFile, "%s, %.2lfg\n",input,maengde);
     fclose(ingredientsFile);
