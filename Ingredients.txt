@@ -2,3 +2,8 @@ salt, 0.00g
 salt, 0.00g
 salt, 0.00g
 salt, 24.00g
+karry, 20500232.00g
+‘bler, 2000000.00g
+‘bler, 2000000.00g
+jordb‘r, 1000000.00g
+pepper, 10.00g
