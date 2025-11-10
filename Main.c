@@ -2,9 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-//function templates are created
+#include <ctype.h>
+
+//function prototypes are created
 void addingredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
+int compare_ignore_case(const char *a, const char *b);
 
 int main() {
     //variables are initiated
@@ -13,13 +16,14 @@ int main() {
     char ingredientNames [1000] [1000];
     double ingredientAmounts [1000];
     int inputChoice; 
+    void suggest_recipe(char input_arr[][100], int count);
     //First part of gui, the program asks for input to decide if the user would like to add an ingredient or to look for one
 
     //A menu for the user to navigate the program
 
     while(true) {
 
-    printf("Choose 1: for add ingredient: \nChoose 2: for scan ingredient: \n3. Exit program\n");
+    printf("Choose 1: for add ingredient: \nChoose 2: for scan ingredient: \nChoose 3. Find recipe\nChoose 4. EXIT\n");
     scanf("%d",&inputChoice);
     
     switch (inputChoice)
@@ -37,8 +41,13 @@ int main() {
       }
       break;
     case 3:
-    printf("Exiting program");
-    exit(EXIT_SUCCESS);
+      count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
+
+      suggest_recipe(ingredientNames, count);
+      break;
+    case 4:
+      printf("Exiting program");
+      exit(EXIT_SUCCESS);
     default:
         break;
     }
@@ -87,3 +96,41 @@ void addingredient() {
 
 }
 
+void suggest_recipe(char ingredient_arr[][100], int count){
+  char recipe_arr[2][5][100] = {
+  {"pepper", "salt", "curry", "basil", "apple"},
+  {"chicken", "salt", "strawberry", "basil", "salad"}
+  };
+
+  int recipe_length = sizeof(recipe_arr)/sizeof(recipe_arr[0][0]);
+  int j = 0;
+  int k = 0;
+  int missing_counter = 0;
+
+  for (int j = 0; j < recipe_length; j++)
+  {
+    for (int i = 0; i < recipe_length; i++)
+    {
+      if (compare_ignore_case(recipe_arr[k][j], ingredient_arr[i])){
+        printf("%s = %s\n", recipe_arr[k][j], ingredient_arr[i]);
+              }else if( recipe_arr[k][j] != "" && ingredient_arr[i] != ""){
+        missing_counter++;
+        printf("%s /= %s missing: %d\n", recipe_arr[k][j], ingredient_arr[i], missing_counter);
+       
+      }
+      
+
+    }
+  }
+
+}
+// skriv om
+int compare_ignore_case(const char *a, const char *b) {
+    while (*a && *b) {
+        if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
+            return 0; // not equal
+        a++;
+        b++;
+    }
+    return *a == *b;
+}
