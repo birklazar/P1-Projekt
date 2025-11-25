@@ -3,11 +3,25 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#define MaxLen 1000
+#define MaxIng 100
 
 //function prototypes are created
+typedef struct Recipes Recipes;
 void addingredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
 int compare_ignore_case(const char *a, const char *b);
+void suggest_recipe(char input_arr[][1000], int count);
+void initRecipes();
+struct Recipes{
+  char name [MaxLen];
+  int IngCount;
+  char ingredients[MaxIng][MaxLen];
+  double amount[MaxIng];
+};
+Recipes recipes[MaxIng];
+int RecipeCount = 0;
+
 
 int main() {
     //variables are initiated
@@ -16,7 +30,17 @@ int main() {
     char ingredientNames [1000] [1000];
     double ingredientAmounts [1000];
     int inputChoice; 
-    void suggest_recipe(char input_arr[][100], int count);
+    
+    initRecipes();
+    /*
+    
+    printf("%s\n", recipes[0].name);
+    for (int i = 0; i < 5; i++)
+    {
+      printf("ingredients nummer %d: %s %.2lf\n", i+1, recipes[0].ingredients[i], recipes[0].amount[i]);
+    }
+    */
+    
     //First part of gui, the program asks for input to decide if the user would like to add an ingredient or to look for one
 
     //A menu for the user to navigate the program
@@ -96,22 +120,17 @@ void addingredient() {
 
 }
 
-void suggest_recipe(char ingredient_arr[][100], int count){
-  char recipe_arr[2][5][100] = {
-  {"pepper", "salt", "curry", "basil", "apple"},
-  {"chicken", "salt", "strawberry", "basil", "salad"}
-  };
-
-  int recipe_length = sizeof(recipe_arr)/sizeof(recipe_arr[0][0]);
+void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
+    int recipe_length = RecipeCount;
   int j = 0;
   int k = 0;
   int missing_counter = 0;
 
-  for (int j = 0; j < recipe_length; j++)
+  for (int j = 0; j < UserIngCount; j++)
   {
-    for (int i = 0; i < recipe_length; i++)
+    for (int i = 0; i < count; i++)
     {
-      if (compare_ignore_case(recipe_arr[k][j], ingredient_arr[i])){
+      if (compare_ignore_case(recipes[j].ingredients[i], ingredient_arr[i])){
         printf("%s = %s\n", recipe_arr[k][j], ingredient_arr[i]);
               }else if( recipe_arr[k][j] != "" && ingredient_arr[i] != ""){
         missing_counter++;
@@ -121,10 +140,11 @@ void suggest_recipe(char ingredient_arr[][100], int count){
       
 
     }
+    missing_counter = 0;
   }
 
 }
-// skriv om
+
 int compare_ignore_case(const char *a, const char *b) {
     while (*a && *b) {
         if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
@@ -133,4 +153,49 @@ int compare_ignore_case(const char *a, const char *b) {
         b++;
     }
     return *a == *b;
+}
+void initRecipes(){
+Recipes Pandekager = {
+"Pandekager",
+5,
+{
+  "Flour",
+  "Egg",
+  "Sugar",
+  "Milk",
+  "Salt"
+},
+{
+  125,
+  3,
+  50,
+  300,
+  0.5
+},
+};
+Recipes ChickenCurry = {
+
+  "Chicken Curry",
+  6,
+{
+  "Chicken",
+  "Curry",
+  "Cream",
+  "Rice",
+  "Apple",
+  "Salt"
+},
+{
+  300,
+  15,
+  150,
+  150,
+  0.5
+},
+};
+
+recipes[RecipeCount++] = Pandekager;
+recipes[RecipeCount++] = ChickenCurry; 
+
+
 }
