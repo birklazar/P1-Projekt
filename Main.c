@@ -3,11 +3,27 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#define MaxLen 1000
+#define MaxIng 100
 
 //function prototypes are created
+typedef struct Recipes Recipes;
 void addingredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
 int compare_ignore_case(const char *a, const char *b);
+void suggest_recipe(char input_arr[][1000], int count);
+void initRecipes();
+void doubleSort(int *Array1, Recipes *Array2, int length);
+
+struct Recipes{
+  char name [MaxLen];
+  int IngCount;
+  char ingredients[MaxIng][MaxLen];
+  double amount[MaxIng];
+};
+Recipes recipes[MaxIng];
+int RecipeCount = 0;
+
 
 int main() {
     //variables are initiated
@@ -16,7 +32,17 @@ int main() {
     char ingredientNames [1000] [1000];
     double ingredientAmounts [1000];
     int inputChoice; 
-    void suggest_recipe(char input_arr[][100], int count);
+    
+    initRecipes();
+    /*
+    
+    printf("%s\n", recipes[0].name);
+    for (int i = 0; i < 5; i++)
+    {
+      printf("ingredients nummer %d: %s %.2lf\n", i+1, recipes[0].ingredients[i], recipes[0].amount[i]);
+    }
+    */
+    
     //First part of gui, the program asks for input to decide if the user would like to add an ingredient or to look for one
 
     //A menu for the user to navigate the program
@@ -96,35 +122,49 @@ void addingredient() {
 
 }
 
-void suggest_recipe(char ingredient_arr[][100], int count){
-  char recipe_arr[2][5][100] = {
-  {"pepper", "salt", "curry", "basil", "apple"},
-  {"chicken", "salt", "strawberry", "basil", "salad"}
-  };
-
-  int recipe_length = sizeof(recipe_arr)/sizeof(recipe_arr[0][0]);
-  int j = 0;
-  int k = 0;
+void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
+    int recipe_length = RecipeCount;
   int missing_counter = 0;
-
-  for (int j = 0; j < recipe_length; j++)
-  {
-    for (int i = 0; i < recipe_length; i++)
-    {
-      if (compare_ignore_case(recipe_arr[k][j], ingredient_arr[i])){
-        printf("%s = %s\n", recipe_arr[k][j], ingredient_arr[i]);
-              }else if( recipe_arr[k][j] != "" && ingredient_arr[i] != ""){
-        missing_counter++;
-        printf("%s /= %s missing: %d\n", recipe_arr[k][j], ingredient_arr[i], missing_counter);
-       
-      }
-      
-
-    }
+  int existingCounter = 0;
+  int *missingIngredientArr = (int*)malloc (RecipeCount*sizeof(int));
+  if(missingIngredientArr == NULL){
+    printf("Download more ram\n");
+    exit(EXIT_FAILURE);
   }
+  for (int j = 0; j < RecipeCount; j++)
+  {
+    printf("\n\nNow comparing %s\n", recipes[j].name);
+    existingCounter = 0;
 
+    for (int i = 0; i < UserIngCount; i++){
+      for(int k = 0; k < recipes[j].IngCount; k++){
+        if (compare_ignore_case(recipes[j].ingredients[k], ingredient_arr[i])){
+          //printf("%s = %s\n", recipes[j].ingredients[k], ingredient_arr[i]);
+          existingCounter++;
+          break;
+        }
+        else if( recipes[j].ingredients[k] != "" && ingredient_arr[i] != ""){
+          
+          //printf("%s /= %s missing: %d\n", recipes[j].ingredients[k], ingredient_arr[i], existingCounter);
+        }
+      }
+    }
+    missing_counter = recipes[j].IngCount-existingCounter;
+    missingIngredientArr[j]=missing_counter;
+    printf("%d\n",missingIngredientArr[j]);
+  }
+    for (int i = 0; i < RecipeCount; i++){
+  printf("%s\n",recipes[i].name);
+  printf("%d\n",missingIngredientArr[i]);
+  }
+  doubleSort(missingIngredientArr,recipes,RecipeCount);
+  for (int i = 0; i < RecipeCount; i++){
+  printf("%s\n",recipes[i].name);
+  printf("%d\n",missingIngredientArr[i]);
+  }
+  free(missingIngredientArr);
 }
-// skriv om
+
 int compare_ignore_case(const char *a, const char *b) {
     while (*a && *b) {
         if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
@@ -133,4 +173,69 @@ int compare_ignore_case(const char *a, const char *b) {
         b++;
     }
     return *a == *b;
+}
+void initRecipes(){
+Recipes Pandekager = {
+"Pandekager",
+5,
+{
+  "Flour",
+  "Egg",
+  "Sugar",
+  "Milk",
+  "Salt"
+},
+{
+  125,
+  3,
+  50,
+  300,
+  0.5
+},
+};
+Recipes ChickenCurry = {
+
+  "Chicken Curry",
+  6,
+{
+  "Chicken",
+  "Curry",
+  "Cream",
+  "Rice",
+  "Apple",
+  "Salt"
+},
+{
+  300,
+  15,
+  150,
+  150,
+  0.5
+},
+};
+
+recipes[RecipeCount++] = Pandekager;
+recipes[RecipeCount++] = ChickenCurry; 
+
+
+}
+
+void doubleSort(int *Array1, Recipes *Array2, int length){
+for (int i = 0; i < length; i++){
+  for (int j = 0; j < length-i; j++)
+  {
+    //skidtet går out of bounds
+    if(Array1[j]<Array1[j+1]){
+      int temp = Array1[j];
+      Array1[j] = Array1[j+1];
+      Array1[j+1] = temp;
+
+      Recipes temp2 = Array2[j];
+      Array2[j] = Array2[j+1];
+      Array2[j+1] = temp2;
+
+    }
+  }
+  
+  }
 }

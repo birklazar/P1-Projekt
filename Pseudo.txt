@@ -1,0 +1,15 @@
+Function Prototypes
+
+int main() {
+Variables
+
+Switch case som "interface" using functions below
+}
+
+int split_ingredients(inputs){
+get information from txt file and put into variables
+}
+
+void addingredient() {
+    add an ingredient 
+}
