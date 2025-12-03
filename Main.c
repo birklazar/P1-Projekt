@@ -16,6 +16,7 @@ void suggest_recipe(char input_arr[][1000], int count);
 void initRecipes();
 void initIngredients();
 void doubleSort(int *Array1, Recipes *Array2, int length);
+int isInFile(FILE* fil, int length, char target[]);
 
 struct Recipes{
   char name [MaxLen];
@@ -79,7 +80,7 @@ int main() {
           fgets(ingredientlist, MaxIng, ingredientsFile);
           printf("%s", ingredientlist);
         }
-
+        fclose(ingredientsFile);
         
       break;
     case 3:
@@ -137,12 +138,20 @@ void addingredient() {
     scanf("%s",&input);
     for (int i = 0; i < 156; i++)
     {
-      if(strcasecmp(input, ingList[i].name) == 0){
+      if(strcasecmp(input, ingList[i].name) == 0 && isInFile(ingredientsFile, 6, input) != 1){
+        printf("denne eksistere ikke i filen :)");
         printf("Skriv maengde: ");
         scanf("%lf", &maengde);
         fprintf(ingredientsFile, "%s %.2lf %s\n",ingList[i].name, maengde, ingList[i].measurement);
         printf("%s", ingList[i].measurement);
-    }
+      }else if(strcasecmp(input, ingList[i].name) == 0 && isInFile(ingredientsFile, 6, input) == 1) {
+        printf("denne eksistere i filen :)");
+        printf("Skriv maengde: ");
+        scanf("%lf", &maengde);
+        int new_amount = ingList[i].amount+maengde;
+        fputs("fuck", ingredientsFile);
+      }
+
     }
     fclose(ingredientsFile);
    }
@@ -297,7 +306,26 @@ void initIngredients() {
           fclose(valid_ingredientsFile);
     }
 
+int isInFile(FILE* fil, int length, char target[]) {
+  char infile[MaxLen];
+
+  fil = fopen("ingredients.txt", "r");
+
+  for (int i = 0; i < length; i++)
+  {
+    fscanf(fil, " %[^ \n]", infile);
+
+    if(strcasecmp(target, infile) == 0){
+        printf("infile: %s= true\n", infile);
+        return 1;
+      } else {
+         printf("infile: %s= false\n", infile);
+        return 0;
+      }
+  fclose(fil);
+  }
   
+}
 
 void doubleSort(int *Array1, Recipes *Array2, int length){
 for (int i = 0; i < length; i++){
