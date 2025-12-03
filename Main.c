@@ -308,23 +308,20 @@ void initIngredients() {
 
 int isInFile(FILE* fil, int length, char target[]) {
   char infile[MaxLen];
+  char line[256];
 
   fil = fopen("ingredients.txt", "r");
 
-  for (int i = 0; i < length; i++)
-  {
-    fscanf(fil, " %[^ \n]", infile);
-
+  while(fgets(line, sizeof(line), fil)) {
+    sscanf(line, "%[^ \n]", infile);
     if(strcasecmp(target, infile) == 0){
-        printf("infile: %s= true\n", infile);
+        printf("infile: %s = true\n", infile);
         return 1;
-      } else {
-         printf("infile: %s= false\n", infile);
-        return 0;
       }
-  fclose(fil);
   }
-  
+    printf("infile: %s = false\n", infile);
+    return 0;
+    fclose(fil);
 }
 
 void doubleSort(int *Array1, Recipes *Array2, int length){
