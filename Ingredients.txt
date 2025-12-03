@@ -1,5 +1,14 @@
-salt, 24.00g
-curry, 20500232.00g
-apple, 2000000.00g
-strawberry, 1000000.00g
-pepper, 10.00g
+
+lamb, 7.00 Stk
+yogurt, 800.00ml
+cream, 900.00ml
+onion, 7.00 Stk
+lentils, 800.00g
+milk, 800.00ml
+Lamb 200.00 Stk
+Tomatoes 300.00 Stk
+Lentils 400.00 
+Milk 1000.00 
+Milk 200.00 ml
+Lentils 200.00 g
+Stock 200.00 ml

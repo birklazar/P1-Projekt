@@ -8,11 +8,13 @@
 
 //function prototypes are created
 typedef struct Recipes Recipes;
+typedef struct pantry_struct pantry_struct;
 void addingredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
 int compare_ignore_case(const char *a, const char *b);
 void suggest_recipe(char input_arr[][1000], int count);
 void initRecipes();
+void initIngredients();
 void doubleSort(int *Array1, Recipes *Array2, int length);
 
 struct Recipes{
@@ -21,7 +23,15 @@ struct Recipes{
   char ingredients[MaxIng][MaxLen];
   double amount[MaxIng];
 };
+
+struct pantry_struct{
+  char name [MaxLen];
+  char measurement[MaxLen];
+  double amount;
+};
+
 Recipes recipes[MaxIng];
+pantry_struct ingList[MaxLen];
 int RecipeCount = 0;
 
 
@@ -31,9 +41,11 @@ int main() {
     int count;
     char ingredientNames [1000] [1000];
     double ingredientAmounts [1000];
+    char ingredientlist[MaxIng];
     int inputChoice; 
     
     initRecipes();
+    initIngredients();
     /*
     
     printf("%s\n", recipes[0].name);
@@ -60,11 +72,15 @@ int main() {
     case 2: 
         count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
 
-        printf("count %d", count);
-      for (int i = 0; i < count; i++)
-      {
-        printf("%s %.2lfg\n", ingredientNames [i], ingredientAmounts [i]);
-      }
+        printf("Total ingredients %d", count);
+        ingredientsFile = fopen("ingredients.txt", "r");
+        for (size_t i = 0; i < count; i++)
+        {
+          fgets(ingredientlist, MaxIng, ingredientsFile);
+          printf("%s", ingredientlist);
+        }
+
+        
       break;
     case 3:
       count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
@@ -111,16 +127,29 @@ char ingredients[1000];
 void addingredient() {
     //Variables are initiated
     double maengde; 
-    char input [1000]; 
+    char input [MaxIng]; 
     FILE* ingredientsFile;
-    //asks for input and appends it to the back of the text file
-    printf("Write an ingredient and an amount in grams: \n");
-    scanf("%s %lf",&input,&maengde);
-    ingredientsFile = fopen("ingredients.txt", "a");
-    fprintf(ingredientsFile, "%s, %.2lfg\n",input,maengde);
-    fclose(ingredientsFile);
 
-}
+
+    //asks for input and appends it to the back of the text file
+    ingredientsFile = fopen("Ingredients.txt", "a");
+    printf("Write an ingredient \n");
+    scanf("%s",&input);
+    for (int i = 0; i < 156; i++)
+    {
+      if(strcasecmp(input, ingList[i].name) == 0){
+        printf("Skriv maengde: ");
+        scanf("%lf", &maengde);
+        fprintf(ingredientsFile, "%s %.2lf %s\n",ingList[i].name, maengde, ingList[i].measurement);
+        printf("%s", ingList[i].measurement);
+    }
+    }
+    fclose(ingredientsFile);
+   }
+
+
+ 
+
 
 void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
     int recipe_length = RecipeCount;
@@ -219,6 +248,56 @@ recipes[RecipeCount++] = ChickenCurry;
 
 
 }
+
+void initIngredients() {
+    char validIng[MaxIng];
+    FILE* valid_ingredientsFile;
+    valid_ingredientsFile = fopen("validIngredients.txt", "r");
+
+    for (int i = 0; i < 158; i++)
+    {
+      fgets(validIng, MaxIng, valid_ingredientsFile);
+      validIng[strcspn(validIng, "\n")] = 0;
+      
+      strcpy(ingList[i].name, validIng);
+
+      if(i < 61) {
+        strcpy(ingList[i].measurement, "Stk");
+
+      }
+      if (i >= 62 && i < 132) {
+        strcpy(ingList[i].measurement, "g");
+      }
+
+      if (i >= 133 && i < 158) {
+        strcpy(ingList[i].measurement, "ml");
+      }
+
+
+
+      /*if(strcasecmp(validIng, input) == 0) {
+
+        if(i < 61) {
+          if(strcasecmp(input, ))
+        printf("Skriv maengde i stykker ");
+        scanf("%lf", &maengde);
+        fprintf(ingredientsFile, "%s, %.2lf Stk\n",input,maengde);
+        }
+        if(i >= 63 && i < 133) {
+        printf("Skriv maengde i gram: ");
+        scanf("%lf", &maengde);
+        fprintf(ingredientsFile, "%s, %.2lfg\n",input,maengde);
+        }
+        if(i >= 135 && i < 158) {
+        printf("Skriv maengde i ml: ");
+        scanf("%lf", &maengde);
+        fprintf(ingredientsFile, "%s, %.2lfml\n",input,maengde);
+        }*/
+      }
+          fclose(valid_ingredientsFile);
+    }
+
+  
 
 void doubleSort(int *Array1, Recipes *Array2, int length){
 for (int i = 0; i < length; i++){
