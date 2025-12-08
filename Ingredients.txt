@@ -1,3 +1,7 @@
-Lamb 200.00 g
-Tomatoes 200.00 Pcs
-Milk 1000.00 ml
+Apples 500.00 Pcs
+Berries 400.00 g
+Oats 200.00 g
+Sugar 4200 g
+Wheat_flour 1000 g
+Chia_seeds 500 g
+Yogurt 500 ml

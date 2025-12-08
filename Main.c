@@ -8,20 +8,21 @@
 #define MaxIng 100
 
 //function prototypes are created
-/*void addingredient();
+/*void addIngredient();
 int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
 int compare_ignore_case(const char *a, const char *b);
 void suggest_recipe(char input_arr[][1000], int count);
 void initRecipes();
 void initIngredients();
 void doubleSort(int *Array1, Recipes *Array2, int length);
-int isInFile(FILE* fil, int length, char target[]);*/
+*/
 
 struct Recipes{
   char name [MaxLen];
   int IngCount;
   char ingredients[MaxIng][MaxLen];
   double amount[MaxIng];
+  int missingIngredients;
 };
 
 struct pantry_struct{
@@ -61,16 +62,19 @@ int main() {
 
     while(true) {
 
-    printf("Choose 1: for add ingredient: \nChoose 2: for scan ingredient: \nChoose 3. Find recipe\nChoose 4. EXIT\n");
+    printf("Choose 1: for add ingredient:\nChoose 2: for remove ingredient: \nChoose 3: for scan ingredient: \nChoose 4. Find recipe\nChoose 5. EXIT\n");
     scanf("%d",&inputChoice);
     
     switch (inputChoice)
     {
     case 1:
-          addingredient();
+        addIngredient();
         break;
     case 2: 
-        count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
+        removeIngredient();
+        break;
+    case 3:
+      count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
 
         printf("Total ingredients %d\n", count);
         ingredientsFile = fopen("ingredients.txt", "r");
@@ -81,14 +85,14 @@ int main() {
         fclose(ingredientsFile);
         
       break;
-    case 3:
+    case 4:
       count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
-
       suggest_recipe(ingredientNames, count);
       break;
-    case 4:
+    case 5:
       printf("Exiting program");
       exit(EXIT_SUCCESS);
+      
     default:
         break;
     }
@@ -111,7 +115,7 @@ char ingredients[1000];
         char name [1000];
         double amount;
 
-        if(sscanf(ingredients, "%[^,], %lf", name, &amount) == 2) {
+        if(sscanf(ingredients, "%s %lf", name, &amount) == 2) {
         strcpy(localNames [count], name);    
         localAmount [count] = amount;
         count++;
@@ -123,120 +127,198 @@ char ingredients[1000];
  return count;
 }
 
-void addingredient() {
-    //Variables are initiated
-    double maengde; 
+void addIngredient() {
+   //Variables are initiated
+    double amount; 
     char input [MaxIng]; 
     FILE* ingredientsFile;
     FILE* tempfile;
-    const char *ingfile_name = "Ingredients.txt";
     char buffer[MaxLen];
-    int line = 1;
     char target[MaxLen];
+    int found = 0;
 
-
-    //asks for input and appends it to the back of the text file
-    ingredientsFile = fopen("Ingredients.txt", "r");
-    tempfile = fopen("temp.txt", "w");
 
     printf("Write an ingredient \n");
     scanf("%s",&input);
+
+    //asks for input and appends it to the back of the text file
+    int index = -1;
     for (int i = 0; i < 156; i++)
     {
-      if(strcasecmp(input, ingList[i].name) == 0 && isInFile(ingredientsFile, 6, input) != 1){
-        printf("denne eksistere ikke i filen :)");
-        printf("Skriv maengde: ");
-        scanf("%lf", &maengde);
-        ingList[i].amount = maengde;
-        fclose(ingredientsFile);
-        ingredientsFile = fopen("Ingredients.txt", "a");
-        fprintf(ingredientsFile, "%s %.2lf %s\n",ingList[i].name, ingList[i].amount, ingList[i].measurement);
-        fclose(ingredientsFile);
-      }else if(strcasecmp(input, ingList[i].name) == 0 && isInFile(ingredientsFile, 6, input) == 1) {
-        
-        printf("denne eksistere i filen :)");
-        printf("Skriv maengde: ");
-        scanf("%lf", &maengde);
-        double new_amount = ingList[i].amount+maengde;
-
-        printf("amount %lf", ingList[i].amount);
-        sprintf(target, "%.2lf", ingList[i].amount);
-        
-        while (fgets(buffer, sizeof(buffer), ingredientsFile))
-          {
-            if(strstr(buffer, target) != NULL){
-              printf("Den findes\n");
-              ingredientsFile = fopen("Ingredients.txt", "a");
-              fprintf(tempfile, "%s %.2lf %s", ingList[i].name, new_amount, ingList[i].measurement);
-              fclose(ingredientsFile);
-            }else {
-              printf("Den findes ikke\n");
-              fputs(buffer, tempfile);
-            }
-          }
-          fclose(ingredientsFile);
-        
+      if(strcasecmp(input, ingList[i].name) == 0) {
+      index = i;
+      break;
       }
+    }
 
+    if (index < 0){
+      printf("Didn't find the ingredient");
+      return;
     }
     
+    ingredientsFile = fopen("Ingredients.txt", "r");
+    tempfile = fopen("temp.txt", "w");
+    
+    if(!ingredientsFile || !tempfile) {
+      printf("COULDN'T FIND FILE");
+      return;
+    }
+
+    printf("Enter the amount: ");
+    scanf("%lf", &amount);
+    
+    double newamount = amount;
+    double existingAmount;
+
+    while(fgets(buffer, sizeof(buffer), ingredientsFile)) {
+      char validIng_name[MaxIng];
+      double validIng_amt;
+      char validIng_unit[16];
+
+      if(sscanf(buffer, "%s %lf %s", validIng_name, &validIng_amt, validIng_unit) == 3) {
+        if(strcasecmp(validIng_name, ingList[index].name) == 0) {
+
+          newamount = validIng_amt + amount;
+          
+          fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+
+          found = 1;
+        continue;
+        }
+      }
+      fputs(buffer, tempfile);
+    }
+
+    if (!found) {
+      fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+    }
+
     fclose(ingredientsFile);
     fclose(tempfile);
-    printf("Fjerner ingredients og renamer temp.txt...\n");
-    if (remove(ingfile_name) == 0) {
-        printf("File deleted successfully.\n");
-    } else {
-        printf("Error: Unable to delete the file.\n");
+
+    if (remove("Ingredients.txt") != 0) {
+      perror("Error deleting Ingredients.txt");
+      return;
     }
-    //rename("temp.txt", "Ingredients.txt");
-    printf("Fjernet ingredients og renamet temp.txt...\n");
-   }
+
+    if (rename("temp.txt", "Ingredients.txt") != 0) {
+      perror("Error renaming temp.txt");
+      return;
+    }
+
+    printf("Ingredient updated successfully.\n");
+}
+
+void removeIngredient(){
+//Variables are initiated
+    double amount; 
+    char input [MaxIng]; 
+    FILE* ingredientsFile;
+    FILE* tempfile;
+    char buffer[MaxLen];
+    char target[MaxLen];
+    int found = 0;
 
 
- 
+    printf("Write an ingredient \n");
+    scanf("%s",&input);
 
+    //asks for input and appends it to the back of the text file
+    int index = -1;
+    for (int i = 0; i < 156; i++)
+    {
+      if(strcasecmp(input, ingList[i].name) == 0) {
+      index = i;
+      break;
+      }
+    }
+
+    if (index < 0){
+      printf("Didn't find the ingredient");
+      return;
+    }
+    
+    ingredientsFile = fopen("Ingredients.txt", "r");
+    tempfile = fopen("temp.txt", "w");
+    
+    if(!ingredientsFile || !tempfile) {
+      printf("COULDN'T FIND FILE");
+      return;
+    }
+
+    printf("Enter the amount: ");
+    scanf("%lf", &amount);
+    
+    double newamount = amount;
+    double existingAmount;
+
+    while(fgets(buffer, sizeof(buffer), ingredientsFile)) {
+      char validIng_name[MaxIng];
+      double validIng_amt;
+      char validIng_unit[16];
+
+      if(sscanf(buffer, "%s %lf %s", validIng_name, &validIng_amt, validIng_unit) == 3) {
+        if(strcasecmp(validIng_name, ingList[index].name) == 0) {
+
+          newamount = validIng_amt - amount;
+          
+          fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+
+          found = 1;
+        continue;
+        }
+      }
+      fputs(buffer, tempfile);
+    }
+
+    if (!found) {
+      printf("Error: Ingredient was not found in your saved ingredients\n\n");
+      return;
+    }
+
+    fclose(ingredientsFile);
+    fclose(tempfile);
+
+    if (remove("Ingredients.txt") != 0) {
+      perror("Error deleting Ingredients.txt");
+      return;
+    }
+
+    if (rename("temp.txt", "Ingredients.txt") != 0) {
+      perror("Error renaming temp.txt");
+      return;
+    }
+
+    printf("Ingredient updated successfully.\n");
+}
 
 void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
     int recipe_length = RecipeCount;
   int missing_counter = 0;
   int existingCounter = 0;
-  int *missingIngredientArr = (int*)malloc (RecipeCount*sizeof(int));
-  if(missingIngredientArr == NULL){
-    printf("Download more ram\n");
-    exit(EXIT_FAILURE);
-  }
-  for (int j = 0; j < RecipeCount; j++)
-  {
-    printf("\n\nNow comparing %s\n", recipes[j].name);
+  //Comparison
+  for (int j = 0; j < RecipeCount; j++){
     existingCounter = 0;
-
     for (int i = 0; i < UserIngCount; i++){
       for(int k = 0; k < recipes[j].IngCount; k++){
         if (compare_ignore_case(recipes[j].ingredients[k], ingredient_arr[i])){
-          //printf("%s = %s\n", recipes[j].ingredients[k], ingredient_arr[i]);
           existingCounter++;
           break;
         }
         else if( recipes[j].ingredients[k] != "" && ingredient_arr[i] != ""){
-          
-          //printf("%s /= %s missing: %d\n", recipes[j].ingredients[k], ingredient_arr[i], existingCounter);
         }
       }
     }
     missing_counter = recipes[j].IngCount-existingCounter;
-    missingIngredientArr[j]=missing_counter;
-    printf("%d\n",missingIngredientArr[j]);
+    recipes[j].missingIngredients=missing_counter;
   }
-    for (int i = 0; i < RecipeCount; i++){
-  printf("%s\n",recipes[i].name);
-  //printf("%d\n",missingIngredientArr[i]);
-  }
-  doubleSort(missingIngredientArr,recipes,RecipeCount);
+
+  //Sort
+  doubleSort(recipes,RecipeCount);
+  //Print sorted
   for (int i = 0; i < RecipeCount; i++){
-  printf("%s\n",recipes[i].name);
-  //printf("%d\n",missingIngredientArr[i]);
+  printf("%d. %s Which is missing %d ingredients\n",i+1,recipes[i].name,recipes[i].missingIngredients);
   }
-  free(missingIngredientArr);
 }
 
 int compare_ignore_case(const char *a, const char *b) {
@@ -248,6 +330,7 @@ int compare_ignore_case(const char *a, const char *b) {
     }
     return *a == *b;
 }
+
 void initRecipes(){
 Recipes Pandekager = {
 "Pandekager",
@@ -266,6 +349,7 @@ Recipes Pandekager = {
   300,
   0.5
 },
+  0,
 };
 Recipes ChickenCurry = {
 
@@ -286,10 +370,54 @@ Recipes ChickenCurry = {
   150,
   0.5
 },
+0,
+};
+
+Recipes ChiaBreakfast = {
+
+  "Chia Breakfast",
+  4,
+{
+  "Chia_Seeds",
+  "Yogurt",
+  "Berries",
+  "Oats"
+},
+{
+  300,
+  150,
+  50,
+  50,
+},
+0,
+};
+
+Recipes OatMeal = {
+
+  "Oatmeal",
+  5,
+{
+  "Oats",
+  "Berries",
+  "Salt",
+  "Sugar",
+  "Apples"
+},
+{
+  300,
+  50,
+  1,
+  10,
+  100
+},
+0,
 };
 
 recipes[RecipeCount++] = Pandekager;
-recipes[RecipeCount++] = ChickenCurry; 
+recipes[RecipeCount++] = ChickenCurry;
+recipes[RecipeCount++] = ChiaBreakfast;
+recipes[RecipeCount++] = OatMeal; 
+
 
 
 }
@@ -342,40 +470,15 @@ void initIngredients() {
           fclose(valid_ingredientsFile);
     }
 
-int isInFile(FILE* fil, int length, char target[]) {
-  char infile[MaxLen];
-  char line[256];
-
-  fil = fopen("ingredients.txt", "r");
-
-  while(fgets(line, sizeof(line), fil)) {
-    sscanf(line, "%[^ \n]", infile);
-    if(strcasecmp(target, infile) == 0){
-        printf("infile: %s = true\n", infile);
-        return 1;
-      }
-  }
-    printf("infile: %s = false\n", infile);
-    return 0;
-    fclose(fil);
-}
-
-void doubleSort(int *Array1, Recipes *Array2, int length){
-for (int i = 0; i < length; i++){
-  for (int j = 0; j < length-i; j++)
-  {
-    //skidtet går out of bounds
-    if(Array1[j]<Array1[j+1]){
-      int temp = Array1[j];
-      Array1[j] = Array1[j+1];
-      Array1[j+1] = temp;
-
-      Recipes temp2 = Array2[j];
-      Array2[j] = Array2[j+1];
-      Array2[j+1] = temp2;
-
+void doubleSort(Recipes *Array2, int length) {
+    for (int i = 0; i < length - 1; i++) {
+        for (int j = 0; j < length - 1 - i; j++) {
+          if (Array2[j].missingIngredients > Array2[j + 1].missingIngredients) {
+            Recipes temp = Array2[j];
+            Array2[j] = Array2[j + 1];
+            Array2[j + 1] = temp;
+          }
+        }
     }
-  }
-  
-  }
 }
+
