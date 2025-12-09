@@ -4,38 +4,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "function.h"
-#define MaxLen 1000
-#define MaxIng 100
 
-//function prototypes are created
-/*void addIngredient();
-int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount []);
-int compare_ignore_case(const char *a, const char *b);
-void suggest_recipe(char input_arr[][1000], int count);
-void initRecipes();
-void initIngredients();
-void doubleSort(int *Array1, Recipes *Array2, int length);
-*/
-
-struct Recipes{
-  char name [MaxLen];
-  int IngCount;
-  char ingredients[MaxIng][MaxLen];
-  double amount[MaxIng];
-  int missingIngredients;
-};
-
-struct pantry_struct{
-  char name [MaxLen];
-  char measurement[MaxLen];
-  double amount;
-};
-
-Recipes recipes[MaxIng];
-pantry_struct ingList[MaxLen];
-int RecipeCount = 0;
-
-
+// The main, containing the switch statement that powers the whole program
 int main() {
     //variables are initiated
     FILE *ingredientsFile;
@@ -47,15 +17,7 @@ int main() {
     
     initRecipes();
     initIngredients();
-    /*
-    
-    printf("%s\n", recipes[0].name);
-    for (int i = 0; i < 5; i++)
-    {
-      printf("ingredients nummer %d: %s %.2lf\n", i+1, recipes[0].ingredients[i], recipes[0].amount[i]);
-    }
-    */
-    
+
     //First part of gui, the program asks for input to decide if the user would like to add an ingredient or to look for one
 
     //A menu for the user to navigate the program
@@ -77,7 +39,7 @@ int main() {
       count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
 
         printf("Total ingredients %d\n", count);
-        ingredientsFile = fopen("ingredients.txt", "r");
+        ingredientsFile = fopen("Ingredients.txt", "r");
         while(fgets(ingredientlist, MaxIng, ingredientsFile)){
           
           printf("%s", ingredientlist);
@@ -87,7 +49,7 @@ int main() {
       break;
     case 4:
       count = split_ingredients(ingredientsFile, ingredientNames, ingredientAmounts);
-      suggest_recipe(ingredientNames, count);
+      suggest_recipe(ingredientNames, ingredientAmounts, count);
       break;
     case 5:
       printf("Exiting program");
@@ -100,14 +62,13 @@ int main() {
     
     return 0;
 }
-
 // Function that splits ingredients and the amount into their own array
  int split_ingredients(FILE* ingredientsFile, char localNames [] [1000], double localAmount [] ){
  
 char ingredients[1000];
  int count=0;
  //we open the file "Ingredients.txt" and read it 
- ingredientsFile = fopen("ingredients.txt", "r");
+ ingredientsFile = fopen("Ingredients.txt", "r");
 
  /*Reads the file and separates the lines into two arrays by char and double,
  the double is found by finding the "," in each line, as the double is right afer*/
@@ -115,7 +76,7 @@ char ingredients[1000];
         char name [1000];
         double amount;
 
-        if(sscanf(ingredients, "%s %lf", name, &amount) == 2) {
+        if(sscanf(ingredients, "%s %lf %*s", name, &amount) == 3) {
         strcpy(localNames [count], name);    
         localAmount [count] = amount;
         count++;
@@ -126,7 +87,7 @@ char ingredients[1000];
 
  return count;
 }
-
+// Function that asks for and adds an ingredient
 void addIngredient() {
    //Variables are initiated
     double amount; 
@@ -180,7 +141,7 @@ void addIngredient() {
 
           newamount = validIng_amt + amount;
           
-          fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+          fprintf(tempfile, "%s %.2lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
 
           found = 1;
         continue;
@@ -190,7 +151,7 @@ void addIngredient() {
     }
 
     if (!found) {
-      fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+      fprintf(tempfile, "%s %.2lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
     }
 
     fclose(ingredientsFile);
@@ -208,7 +169,7 @@ void addIngredient() {
 
     printf("Ingredient updated successfully.\n");
 }
-
+// Function that asks for and removes an ingredient
 void removeIngredient(){
 //Variables are initiated
     double amount; 
@@ -219,71 +180,74 @@ void removeIngredient(){
     char target[MaxLen];
     int found = 0;
 
-
+// ask user for ingredient name
     printf("Write an ingredient \n");
     scanf("%s",&input);
 
-    //asks for input and appends it to the back of the text file
+// search for ingredient in ingList[]
     int index = -1;
-    for (int i = 0; i < 156; i++)
-    {
+    for (int i = 0; i < 156; i++){
       if(strcasecmp(input, ingList[i].name) == 0) {
       index = i;
       break;
       }
     }
-
+// ingredient not found
     if (index < 0){
       printf("Didn't find the ingredient");
       return;
     }
-    
+// open ingredient file to read and temp file to write updated data
     ingredientsFile = fopen("Ingredients.txt", "r");
     tempfile = fopen("temp.txt", "w");
-    
+// check that both files opened correctly
     if(!ingredientsFile || !tempfile) {
       printf("COULDN'T FIND FILE");
       return;
     }
-
+// ask user how much to remove
     printf("Enter the amount: ");
     scanf("%lf", &amount);
     
     double newamount = amount;
     double existingAmount;
-
+// read the file line by line
     while(fgets(buffer, sizeof(buffer), ingredientsFile)) {
       char validIng_name[MaxIng];
       double validIng_amt;
       char validIng_unit[16];
-
+// parse: name amount unit
       if(sscanf(buffer, "%s %lf %s", validIng_name, &validIng_amt, validIng_unit) == 3) {
+// check if this line is the ingredient we want to update        
         if(strcasecmp(validIng_name, ingList[index].name) == 0) {
-
+// subtract the amount
           newamount = validIng_amt - amount;
-          
-          fprintf(tempfile, "%s %2.lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
+          if (newamount < 0) {
+          newamount = 0;
+          }
+// write updated ingredient into temp file
+          fprintf(tempfile, "%s %.2lf %s\n", ingList[index].name, newamount, ingList[index].measurement);
 
           found = 1;
         continue;
         }
       }
+      // write unmodified line to temp file
       fputs(buffer, tempfile);
     }
-
+// if ingredient never appeared in file
     if (!found) {
       printf("Error: Ingredient was not found in your saved ingredients\n\n");
       return;
     }
-
+// close both files
     fclose(ingredientsFile);
     fclose(tempfile);
-
+// replace old file with updated one
     if (remove("Ingredients.txt") != 0) {
       perror("Error deleting Ingredients.txt");
       return;
     }
-
     if (rename("temp.txt", "Ingredients.txt") != 0) {
       perror("Error renaming temp.txt");
       return;
@@ -291,8 +255,8 @@ void removeIngredient(){
 
     printf("Ingredient updated successfully.\n");
 }
-
-void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
+// The algorithm that determines which recipe is missing the least ingredients
+void suggest_recipe(char ingredient_arr[][1000],double ingredient_amount[1000], int UserIngCount){
     int recipe_length = RecipeCount;
   int missing_counter = 0;
   int existingCounter = 0;
@@ -301,11 +265,10 @@ void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
     existingCounter = 0;
     for (int i = 0; i < UserIngCount; i++){
       for(int k = 0; k < recipes[j].IngCount; k++){
-        if (compare_ignore_case(recipes[j].ingredients[k], ingredient_arr[i])){
-          existingCounter++;
-          break;
-        }
-        else if( recipes[j].ingredients[k] != "" && ingredient_arr[i] != ""){
+  //Check that the right ingredient and a sufficient amount is in the saved ingredients
+        if (strcasecmp(recipes[j].ingredients[k], ingredient_arr[i]) == 0 && recipes[j].amount[k] <= ingredient_amount[i]){
+            existingCounter++;
+            break;
         }
       }
     }
@@ -314,23 +277,95 @@ void suggest_recipe(char ingredient_arr[][1000], int UserIngCount){
   }
 
   //Sort
-  doubleSort(recipes,RecipeCount);
-  //Print sorted
+  boubleSort(recipes,RecipeCount);
+  chooseRecipe();
+}
+// Function used in suggest_recipe that allows the user to select a recipe and determine wether or not to remove the used ingredients
+void chooseRecipe(){
+  int input = 0;
+  char input2;
+if (RecipeCount<10){
   for (int i = 0; i < RecipeCount; i++){
-  printf("%d. %s Which is missing %d ingredients\n",i+1,recipes[i].name,recipes[i].missingIngredients);
+    printf("%d. %s Which is missing %d ingredients\n",i+1,recipes[i].name,recipes[i].missingIngredients);
+    printf("Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat);
+  }
+}else{
+  for (int i = 0; i < 10; i++){
+    printf("%d. %s Which is missing %d ingredients\n",i+1,recipes[i].name,recipes[i].missingIngredients);
+    printf("Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat);
+  }
+}
+printf("Choose a recipe by numbers listed above\n");
+scanf("%d",&input);
+input--;
+printf("%s :\n",recipes[input].name);
+for (int i = 0; i < recipes[input].IngCount; i++)
+{
+  printf("%s : %.2lf\n",recipes[input].ingredients[i],recipes[input].amount[i]);
+}
+printf("%s\n",recipes[input].guide);
+printf("Would you like to remove the ingredients used in the recipe?\ny for yes n for no :  ");
+scanf(" %c",&input2);
+if (input2 == 'y'){
+FILE *ingredientsFile = fopen("Ingredients.txt", "r");
+FILE *tempfile = fopen("temp.txt", "w");
+char buffer[MaxLen];
+double amount = 0;
+
+// check that both files opened correctly
+if (!ingredientsFile || !tempfile) {
+    printf("COULDN'T FIND FILE");
+    return;
+}
+
+while (fgets(buffer, sizeof(buffer), ingredientsFile)) {
+  char validIng_name[MaxIng];
+  double validIng_amt;
+  char validIng_unit[16];
+  int found = 0;
+  if (sscanf(buffer, "%s %lf %s", validIng_name, &validIng_amt, validIng_unit) == 3) {
+    for (int i = 0; i < recipes[input].IngCount; i++) {
+// get the subtraction amount for this recipe slot
+      amount = recipes[input].amount[i];
+      if (strcasecmp(validIng_name, recipes[input].ingredients[i]) == 0) {
+        double newamount = validIng_amt - amount;
+        if (newamount < 0) {
+          newamount = 0;
+        }
+      fprintf(tempfile, "%s %.2lf %s\n",
+      recipes[input].ingredients[i],
+      newamount,
+      validIng_unit);
+
+      found = 1;
+      break; // prevent multiple matches writing multiple lines
+      }
+    }
+  }
+
+    // write original line only if no update was written
+  if (!found) {
+      fputs(buffer, tempfile);
   }
 }
 
-int compare_ignore_case(const char *a, const char *b) {
-    while (*a && *b) {
-        if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
-            return 0; // not equal
-        a++;
-        b++;
-    }
-    return *a == *b;
-}
+// close files
+  fclose(ingredientsFile);
+  fclose(tempfile);
 
+// replace Ingredients.txt with temp.txt
+  if (remove("Ingredients.txt") != 0) {
+    perror("Error deleting Ingredients.txt");
+    return;
+  }
+  if (rename("temp.txt", "Ingredients.txt") != 0) {
+    perror("Error renaming temp.txt");
+    return;
+  }
+
+  }
+}
+// Function that initializes all of the recipes
 void initRecipes(){
 Recipes Pandekager = {
 "Pandekager",
@@ -350,6 +385,10 @@ Recipes Pandekager = {
   0.5
 },
   0,
+  175,
+  5,
+  7,
+  "This is how to make pancakes :",
 };
 Recipes ChickenCurry = {
 
@@ -371,6 +410,10 @@ Recipes ChickenCurry = {
   0.5
 },
 0,
+500,
+30,
+20,
+"This is how to make Chicken curry :",
 };
 
 Recipes ChiaBreakfast = {
@@ -390,6 +433,10 @@ Recipes ChiaBreakfast = {
   50,
 },
 0,
+138,
+4.7,
+8.7,
+"This is how to make Chia Breakfast :",
 };
 
 Recipes OatMeal = {
@@ -411,6 +458,10 @@ Recipes OatMeal = {
   100
 },
 0,
+300,
+8,
+2,
+"This is how to make Oatmeal :",
 };
 
 recipes[RecipeCount++] = Pandekager;
@@ -421,7 +472,7 @@ recipes[RecipeCount++] = OatMeal;
 
 
 }
-
+// Function that adds values to all of the ingredients
 void initIngredients() {
     char validIng[MaxIng];
     FILE* valid_ingredientsFile;
@@ -445,32 +496,11 @@ void initIngredients() {
       if (i >= 133 && i < 158) {
         strcpy(ingList[i].measurement, "ml");
       }
-
-
-
-      /*if(strcasecmp(validIng, input) == 0) {
-
-        if(i < 61) {
-          if(strcasecmp(input, ))
-        printf("Skriv maengde i stykker ");
-        scanf("%lf", &maengde);
-        fprintf(ingredientsFile, "%s, %.2lf Stk\n",input,maengde);
-        }
-        if(i >= 63 && i < 133) {
-        printf("Skriv maengde i gram: ");
-        scanf("%lf", &maengde);
-        fprintf(ingredientsFile, "%s, %.2lfg\n",input,maengde);
-        }
-        if(i >= 135 && i < 158) {
-        printf("Skriv maengde i ml: ");
-        scanf("%lf", &maengde);
-        fprintf(ingredientsFile, "%s, %.2lfml\n",input,maengde);
-        }*/
       }
           fclose(valid_ingredientsFile);
     }
-
-void doubleSort(Recipes *Array2, int length) {
+// Our boublesort, that we used in suggest_recipe to suggest the recipe with the lowest amount of missing ingredients
+void boubleSort(Recipes *Array2, int length) {
     for (int i = 0; i < length - 1; i++) {
         for (int j = 0; j < length - 1 - i; j++) {
           if (Array2[j].missingIngredients > Array2[j + 1].missingIngredients) {
@@ -481,4 +511,3 @@ void doubleSort(Recipes *Array2, int length) {
         }
     }
 }
-

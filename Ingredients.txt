@@ -1,7 +1,7 @@
 Apples 500.00 Pcs
-Berries 400.00 g
-Oats 200.00 g
+Berries 300.00 g
+Oats 100.00 g
 Sugar 4200 g
 Wheat_flour 1000 g
-Chia_seeds 500 g
-Yogurt 500 ml
+Chia_Seeds 0.00 g
+Yogurt 200.00 ml
