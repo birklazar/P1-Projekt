@@ -35,7 +35,10 @@ Cantaloupe
 Pomegranate
 Eggs
 Bay_leaves
+vanilla_pod
+Sliced_bread
 
+vanilla_sugar
 Spinach
 Kale
 Lettuce
@@ -130,6 +133,9 @@ Cornstarch
 Yeast
 Canned_tomatoes
 Coconut_flakes
+Parmesan
+Green_pesto
+Red_pesto
 
 Milk
 Cream
@@ -154,3 +160,5 @@ Tahini
 Tomato_paste
 Coconut_milk
 Stock
+Beer
+Hoisin_sauce
