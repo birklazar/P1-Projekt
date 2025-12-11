@@ -3,6 +3,11 @@ typedef struct pantry_struct pantry_struct;
 
 #define MaxLen 1000
 #define MaxIng 100
+#define COLOR_BOLD  "\e[1m"
+#define COLOR_RED   "\x1b[31m"
+#define COLOR_OFF   "\e[m"
+#define COLOR_WHITE "\x1b[m"
+
 
 struct Recipes{
   char name [MaxLen];
@@ -13,7 +18,10 @@ struct Recipes{
   double Calories;
   double Protein;
   double Fat;
-  char guide[MaxLen];
+  double carbs;
+  int missingarr[15];
+  double price;
+  char guide[10000];
 };
 
 struct pantry_struct{
