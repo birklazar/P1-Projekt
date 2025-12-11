@@ -291,6 +291,9 @@ void suggest_recipe(char ingredient_arr[][1000],double ingredient_amount[1000], 
 void chooseRecipe(){
   int input = 0;
   char input2;
+  char unit[MaxLen];
+  
+
 if (RecipeCount<10){
   for (int i = 0; i < RecipeCount; i++){
     printf("%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
@@ -309,11 +312,19 @@ system("cls");
 printf(COLOR_BOLD"%s :\n",recipes[input].name, COLOR_OFF);
 for (int i = 0; i < recipes[input].IngCount; i++)
 {
+  for (int j = 0; j < 156; j++)
+  {
+    if(strcasecmp(recipes[input].ingredients[i], ingList[j].name) == 0) {
+      strcpy(unit, ingList[j].measurement);
+      break;
+    }
+  }
+  
   if(recipes[input].missingarr[i] == 1){
   
-  printf(COLOR_WHITE"%s : %.2lf\n",recipes[input].ingredients[i],recipes[input].amount[i]);
+  printf(COLOR_WHITE"%s : %.2lf %s\n",recipes[input].ingredients[i],recipes[input].amount[i], unit);
   } else {
-    printf(COLOR_RED"%s : %.2lf<--- Missing\n",recipes[input].ingredients[i],recipes[input].amount[i]);
+    printf(COLOR_RED"%s : %.2lf %s<--- Missing\n",recipes[input].ingredients[i],recipes[input].amount[i], unit);
   }
 }
 printf(COLOR_WHITE"%s\n",recipes[input].guide);
