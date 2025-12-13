@@ -109,7 +109,7 @@ void addIngredient() {
 
     //asks for input and appends it to the back of the text file
     int index = -1;
-    for (int i = 0; i < 156; i++)
+    for (int i = 0; i < 164; i++)
     {
       if(strcasecmp(input, ingList[i].name) == 0) {
       index = i;
@@ -191,7 +191,7 @@ void removeIngredient(){
 
 // search for ingredient in ingList[]
     int index = -1;
-    for (int i = 0; i < 156; i++){
+    for (int i = 0; i < 164; i++){
       if(strcasecmp(input, ingList[i].name) == 0) {
       index = i;
       break;
@@ -329,7 +329,7 @@ system("cls");
 printf(COLOR_BOLD"%s :\n",recipes[input].name, COLOR_OFF);
 for (int i = 0; i < recipes[input].IngCount; i++)
 {
-  for (int j = 0; j < 156; j++)
+  for (int j = 0; j < 164; j++)
   {
     if(strcasecmp(recipes[input].ingredients[i], ingList[j].name) == 0) {
       strcpy(unit, ingList[j].measurement);
