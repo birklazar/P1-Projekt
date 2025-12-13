@@ -7,6 +7,7 @@ typedef struct pantry_struct pantry_struct;
 #define COLOR_RED   "\x1b[31m"
 #define COLOR_OFF   "\e[m"
 #define COLOR_WHITE "\x1b[m"
+#define COLOR_GREEN "\e[0;32m"
 
 
 struct Recipes{
@@ -22,6 +23,7 @@ struct Recipes{
   int missingarr[15];
   double price;
   char guide[10000];
+  int vegetarian;
 };
 
 struct pantry_struct{

@@ -296,16 +296,33 @@ void chooseRecipe(){
 
 if (RecipeCount<10){
   for (int i = 0; i < RecipeCount; i++){
-    printf("%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
-    printf("Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
-  }
-}else{
-  for (int i = 0; i < 10; i++){
-    printf("%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
-    printf("Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
+    if(recipes[i].vegetarian == 1) {
+    printf(COLOR_GREEN "%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
+    printf(COLOR_GREEN "Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
+ 
+}else {
+    printf(COLOR_WHITE"%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
+    printf(COLOR_WHITE"Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
   }
 }
-printf("Choose a recipe by numbers listed above\n");
+
+}else{
+
+
+  
+  for (int i = 0; i < 10; i++){
+    if(recipes[i].vegetarian == 1) {
+    printf(COLOR_GREEN "%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
+    printf(COLOR_GREEN "Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
+}else{
+    printf(COLOR_WHITE"%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
+    printf(COLOR_WHITE"Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
+    }
+  
+}
+}
+
+printf(COLOR_WHITE"Choose a recipe by numbers listed above (Green is vegetarian)\n");
 scanf("%d",&input);
 input--;
 system("cls");
@@ -424,6 +441,7 @@ Recipes Pandekager = {
   {},
   100,
   "This is how to make pancakes :",
+  1
 };
 Recipes ChickenCurry = {
 
@@ -452,6 +470,7 @@ Recipes ChickenCurry = {
 {0},
 100,
 "This is how to make Chicken curry :",
+0
 };
 Recipes SpinachWaffles= {
     "Spinach Waffles",
@@ -485,7 +504,8 @@ Recipes SpinachWaffles= {
     165,  
     {0},               
     60.0,      
-"Rør hvedemel, fuldkornsmel og bagepulver godt sammen i en skål. Skyl spinaten grundigt og kom derefter spinat i en blender sammen med resten af ingredienserne, inkl. mel. Blend det sammen til en helt ensartet lind dej. Lad gerne dejen hvile i 15-30 minutter, så melet lige kan absorbere lidt af væden og tykne. Fordel lidt olie eller smør i et vaffeljern og steg vaflerne til de er gyldne og gennembagt."
+"Rør hvedemel, fuldkornsmel og bagepulver godt sammen i en skål. Skyl spinaten grundigt og kom derefter spinat i en blender sammen med resten af ingredienserne, inkl. mel. Blend det sammen til en helt ensartet lind dej. Lad gerne dejen hvile i 15-30 minutter, så melet lige kan absorbere lidt af væden og tykne. Fordel lidt olie eller smør i et vaffeljern og steg vaflerne til de er gyldne og gennembagt.",
+1,
 };
 
 Recipes ChickenBaconOnePot = {
@@ -528,6 +548,7 @@ Recipes ChickenBaconOnePot = {
 {0},
 185,
 "This is how to make One Pot Chicken Bacon Pasta :",
+0
 };
 
 Recipes FriedRice = {
@@ -566,6 +587,7 @@ Recipes FriedRice = {
 {0},
 60,
 "Mince 3 garlic cloves. Thinly slice 2 medium scallions crosswise on a slight diagonal, keeping the white parts separate from the light and dark green parts.\nHeat 2 tablespoons of the vegetable oil in a large wok or nonstick frying pan over medium-high heat until shimmering. Add the garlic, scallion whites, and 1 cup frozen peas and carrots. Stir-fry until the carrots and peas are thawed, about 2 minutes.\nAdd 4 cups cold cooked rice, breaking up any clumps of rice with your fingers as you add it in. Toss to combine with the peas and carrots. Add 1 tablespoon soy sauce, 1 1/2 teaspoons kosher salt, and 3/4 teaspoon ground white pepper. Stir to combine.\nPush the fried rice to one side of the pan. Add the remaining 1 teaspoon vegetable oil to the now-empty side of the pan, then crack 2 large eggs into the oil. Scramble into fluffy curds until almost set.\nTurn off the heat and stir the eggs into the fried rice, breaking up any large pieces of egg. Drizzle with 3/4 teaspoon toasted sesame oil and toss to combine. Taste and season with more kosher salt and white pepper as needed. Garnish with the reserved scallion greens.\n",
+1
 };
 
 Recipes OatMeal = {
@@ -593,6 +615,7 @@ Recipes OatMeal = {
 {0},
 100,
 "This is how to make Oatmeal :",
+1
 };
 
 Recipes PastaPesto = {
@@ -616,6 +639,7 @@ Recipes PastaPesto = {
 {0},
 30,
 "This is how to make PastaPesto : Cook the pasta al dente according to the instructions on the package. Reserve 200 ml of the pasta cooking water, then drain the rest. Return the pasta to the pot and toss it with the pesto over low heat. Adjust the consistency with the pasta water until the dish is nice and creamy. Taste and adjust with more salt and pepper if needed.",
+1
 };
 
 Recipes Pasta_Alfredo = {
@@ -650,6 +674,7 @@ Recipes Pasta_Alfredo = {
   {0},
   100,
   "Test",
+  1
 };
 
 Recipes Cacio_e_pepe = {
@@ -672,12 +697,13 @@ Recipes Cacio_e_pepe = {
 0,
 1200,
 40,
-8,
+39,
 155,
 {0},
 
 80,
 "This is how to make Cacio_e_pepe : Crush the peppercorns coarsely in a mortar or using a rolling pin. Toast the pepper in a dry pan large enough to hold all the pasta. Meanwhile, cook the pasta in a pot of generously salted water. After the pepper has toasted for 2 to 3 minutes, add a tablespoon of butter to the pan. Let it melt and foam, then add a couple of large spoonfuls of pasta cooking water. Reduce the heat and let it simmer gently. When the pasta is halfway cooked, transfer it directly from the pot to the pan. Keep adding pasta water little by little while the pasta finishes cooking in the pan. When the pasta is nearly al dente, add the cheese gradually while stirring constantly. Add a bit more pasta water if needed so the sauce ends up silky, creamy, and smooth. Serve immediately with extra cheese on top.",
+1
 };
 
 recipes[RecipeCount++] = Pandekager;
