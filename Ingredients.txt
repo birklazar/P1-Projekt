@@ -1,15 +1,3 @@
-Apples 500.00 Pcs
-Berries 250.00 g
-Oats 50.00 g
-Chicken 1000 g
-Sugar 4150.00 g
-Wheat_flour 1000 g
-Chia_Seeds 0.00 g
-Oregano 10 g
-Thyme 20 g
-Yogurt 50.00 ml
-vanilla_pod 10.00 Pcs
-Pasta 49200.00 g
-Green_Pesto 70.00 g
-Spinach 200.00 g
-Cream 200.00 ml
+
+Potatoes 500.00 Pcs
+Apples 200.00 Pcs

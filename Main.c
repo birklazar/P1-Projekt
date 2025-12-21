@@ -26,7 +26,7 @@ int main() {
 
     while(true) {
 
-    printf("Choose 1: for add ingredient:\nChoose 2: for remove ingredient: \nChoose 3: for scan ingredient: \nChoose 4. Find recipe\nChoose 5. EXIT\n");
+    printf("Choose 1: for add ingredient:\nChoose 2: for remove ingredient: \nChoose 3: Display ingredients: \nChoose 4. Find recipe\nChoose 5. EXIT\n");
     scanf("%d",&inputChoice);
     
     switch (inputChoice)
@@ -303,13 +303,9 @@ if (RecipeCount<10){
 }else {
     printf(COLOR_WHITE"%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
     printf(COLOR_WHITE"Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
+    }
   }
-}
-
 }else{
-
-
-  
   for (int i = 0; i < 10; i++){
     if(recipes[i].vegetarian == 1) {
     printf(COLOR_GREEN "%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
@@ -318,8 +314,7 @@ if (RecipeCount<10){
     printf(COLOR_WHITE"%d. %s Which is missing %d ingredients (Price: %.2lfDKK)\n",i+1,recipes[i].name, recipes[i].missingIngredients, recipes[i].price);
     printf(COLOR_WHITE"Calories : %.2lf kcal / Proteins : %.2lf g / Fats : %.2lf g / Carbs : %.2lf g\n\n",recipes[i].Calories,recipes[i].Protein,recipes[i].Fat, recipes[i].carbs);
     }
-  
-}
+  }
 }
 
 printf(COLOR_WHITE"Choose a recipe by numbers listed above (Green is vegetarian)\n");
